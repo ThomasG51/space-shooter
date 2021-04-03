@@ -14,12 +14,13 @@ spaceship.borderUp = 0
 spaceship.borderRight = 0
 spaceship.borderDown = 0
 spaceship.borderLeft = 0
+spaceship.shootSound = love.audio.newSource('sounds/shoot.wav', 'static')
 
 
 spaceship.load = function()
   
   spaceship.positionX = WINDOW_WIDTH / 2
-  spaceship.positionY = WINDOW_HEIGHT / 2
+  spaceship.positionY = WINDOW_HEIGHT - 40
   
   spaceship.scaleX = 1.4
   spaceship.scaleY = 1.4
