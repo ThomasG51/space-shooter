@@ -16,6 +16,7 @@ WINDOW_HEIGHT = love.graphics.getHeight()
 local mainTheme = love.audio.newSource('sounds/music.mp3', 'stream')
 
 local spaceship = require('spaceship')
+local map = require('map')
 
 require('functions/addShoot')
 local shootList = {}
@@ -28,17 +29,24 @@ local randomDirection = math.random(1,2)
 
 
 function love.load()
+  
   mainTheme:play()
   mainTheme:setVolume(0.5)
   spaceship.load()
+  map.load()
   
   addAlien('mothership', 120, 120, alienList)
   addAlien('fighter', 520, 520, alienList)
   addAlien('cargo', 940, 360, alienList)
+  
 end
 
 
 function love.update(dt)
+  
+  -- MAP
+  map.scrollY = map.scrollY + (50*dt)
+  
   -- SPACESHIP
   spaceship.update(dt)
   
@@ -79,10 +87,15 @@ function love.update(dt)
       table.remove(alienList, i)
     end
   end
+  
 end
 
 
 function love.draw()
+    
+  -- draw map
+  map.draw()
+  
   -- draw spaceship
   spaceship.draw()
   
@@ -102,12 +115,15 @@ function love.draw()
   love.graphics.print('Shoots: ' .. #shootList, 10, 10)
   love.graphics.print('Aliens: ' .. #alienList, 10, 30)
   love.graphics.print('Direction: ' .. randomDirection, 10, 50)
+  
 end
 
 
 function love.keypressed(key)
+  
   if key == 'space' then
     spaceship.shootSound:play()
     addShoot(spaceship.positionX, spaceship.positionY - (spaceship.height / 2), shootList)
   end
+  
 end

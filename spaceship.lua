@@ -20,7 +20,7 @@ spaceship.shootSound = love.audio.newSource('sounds/shoot.wav', 'static')
 spaceship.load = function()
   
   spaceship.positionX = WINDOW_WIDTH / 2
-  spaceship.positionY = WINDOW_HEIGHT - 40
+  spaceship.positionY = WINDOW_HEIGHT - 96
   
   spaceship.scaleX = 1.4
   spaceship.scaleY = 1.4
