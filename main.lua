@@ -13,6 +13,10 @@ math.randomseed(love.timer.getTime())
 -- Returns the angle between two vectors assuming the same origin.
 function math.angle(x1,y1, x2,y2) return math.atan2(y2-y1, x2-x1) end
 
+require('functions/addShoot')
+require('functions/addAlien')
+require('functions/collide')
+
 WINDOW_WIDTH = love.graphics.getWidth()
 WINDOW_HEIGHT = love.graphics.getHeight()
 GAME_SCROLL = 30
@@ -23,14 +27,8 @@ local shootEffect = love.audio.newSource('sounds/shoot.wav', 'static')
 local spaceship = require('spaceship')
 local map = require('map')
 
-require('functions/addShoot')
 local shootList = {}
-
-require('functions/addAlien')
 local alienList = {}
-
--- Aliens chrono shoot
-local chronoShoot = 0
 
 -- Alien direction
 local randomDirection = math.random(1,2)
@@ -77,14 +75,39 @@ function love.update(dt)
   -- SHOOTS
   local i
   for i = #shootList, 1, -1 do
+    
     -- movement
     shootList[i].positionX = shootList[i].positionX + shootList[i].speedX
     shootList[i].positionY = shootList[i].positionY + shootList[i].speedY
 
-    -- remove
-    if shootList[i].positionY < 0 or shootList[i].positionY > WINDOW_HEIGHT then
-      table.remove(shootList, i)
+    -- Spaceship collision detection
+    if shootList[i] ~= nil then
+      if shootList[i].type == 'alien' and collide(spaceship, shootList[i]) then
+         print('BOOOOMMMM')
+         table.remove(shootList, i)
+      elseif shootList[i].positionY < 0 or 
+             shootList[i].positionY > WINDOW_HEIGHT or 
+             shootList[i].positionX < 0 or 
+             shootList[i].positionX > WINDOW_WIDTH then
+          table.remove(shootList, i)
+      end
     end
+    
+    -- Alien collision detection
+    for alien = #alienList, 1, -1 do
+      if shootList[i] ~= nil then
+        if shootList[i].type == 'spaceship' and collide(alienList[alien], shootList[i]) then
+          table.remove(shootList, i)
+          table.remove(alienList, alien)
+        elseif shootList[i].positionY < 0 or 
+               shootList[i].positionY > WINDOW_HEIGHT or 
+               shootList[i].positionX < 0 or 
+               shootList[i].positionX > WINDOW_WIDTH then
+            table.remove(shootList, i)
+        end
+      end
+    end
+
   end
   
   -- ALIENS
@@ -100,6 +123,7 @@ function love.update(dt)
       
       alienList[i].chronoShoot = alienList[i].chronoShoot + 1
       
+      -- Aliens type settings
       if alienList[i].type == 'mothership' then
         alienList[i].positionY = alienList[i].positionY + (alienList[i].speedY * dt)
         alienList[i].shootInterval = math.random(120, 240) 

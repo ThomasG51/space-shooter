@@ -36,7 +36,7 @@ spaceship.update = function(dt)
   spaceship.borderLeft = spaceship.positionX - (spaceship.width / 2)
   
   --spaceship movement
-  if love.keyboard.isDown('up') and spaceship.borderUp >= 300 then
+  if love.keyboard.isDown('up') and spaceship.borderUp >= 40 then
     spaceship.positionY = spaceship.positionY - (spaceship.speed * dt)
   end
   

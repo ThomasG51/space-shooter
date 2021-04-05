@@ -3,6 +3,7 @@
 function addShoot(type, x, y, speedX, speedY, shootList)
   
   local shoot = {}
+  shoot.type = type
   if type == 'spaceship' then
     shoot.sprite = love.graphics.newImage('images/laser1.png')
   elseif type == 'alien' then
