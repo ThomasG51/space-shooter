@@ -83,8 +83,11 @@ function love.update(dt)
     -- Spaceship collision detection
     if shootList[i] ~= nil then
       if shootList[i].type == 'alien' and collide(spaceship, shootList[i]) then
-         print('BOOOOMMMM')
          table.remove(shootList, i)
+         spaceship.life = spaceship.life - 1
+         if spaceship.life <= 0 then
+           print('GAME OVER')
+         end
       elseif shootList[i].positionY < 0 or 
              shootList[i].positionY > WINDOW_HEIGHT or 
              shootList[i].positionX < 0 or 
@@ -94,11 +97,14 @@ function love.update(dt)
     end
     
     -- Alien collision detection
-    for alien = #alienList, 1, -1 do
+    for n = #alienList, 1, -1 do
       if shootList[i] ~= nil then
-        if shootList[i].type == 'spaceship' and collide(alienList[alien], shootList[i]) then
+        if shootList[i].type == 'spaceship' and collide(alienList[n], shootList[i]) then
           table.remove(shootList, i)
-          table.remove(alienList, alien)
+          alienList[n].life = alienList[n].life - 1
+          if alienList[n].life <= 0 then
+            table.remove(alienList, n)
+          end
         elseif shootList[i].positionY < 0 or 
                shootList[i].positionY > WINDOW_HEIGHT or 
                shootList[i].positionX < 0 or 
@@ -199,9 +205,10 @@ function love.draw()
   spaceship.draw()
   
   -- draw logs
-  love.graphics.print('Shoots: ' .. #shootList, 10, 10)
-  love.graphics.print('Aliens: ' .. #alienList, 10, 30)
-  love.graphics.print('Direction: ' .. randomDirection, 10, 50)
+  love.graphics.print('Life: ' .. spaceship.life, 10, 10)
+  love.graphics.print('Shoots: ' .. #shootList, 10, 30)
+  love.graphics.print('Aliens: ' .. #alienList, 10, 50)
+  love.graphics.print('Direction: ' .. randomDirection, 10, 70)
   
 end
 

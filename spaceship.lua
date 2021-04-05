@@ -14,6 +14,7 @@ spaceship.borderUp = 0
 spaceship.borderRight = 0
 spaceship.borderDown = 0
 spaceship.borderLeft = 0
+spaceship.life = 5
 
 
 spaceship.load = function()
