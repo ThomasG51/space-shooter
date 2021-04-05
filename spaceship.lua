@@ -14,7 +14,6 @@ spaceship.borderUp = 0
 spaceship.borderRight = 0
 spaceship.borderDown = 0
 spaceship.borderLeft = 0
-spaceship.shootSound = love.audio.newSource('sounds/shoot.wav', 'static')
 
 
 spaceship.load = function()

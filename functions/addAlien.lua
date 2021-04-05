@@ -13,6 +13,10 @@ function addAlien(type, x, y, alienList)
   alien.speedX = 20
   alien.speedY = 50
   alien.sleep = true
+  alien.chronoShoot = 0
+  alien.shootInterval = 0
+  alien.shootSpeedX = 10
+  alien.shootSpeedY = 10
   
   if type == 'mothership' then
     alien.scaleX = 3.4
@@ -21,11 +25,11 @@ function addAlien(type, x, y, alienList)
     alien.scaleX = 2.4
     alien.scaleY = 2.4
   elseif type == 'fighter' then
-    alien.scaleX = 1.4
-    alien.scaleY = 1.4
+    alien.scaleX = 1.8
+    alien.scaleY = 1.8
   elseif type == 'turret' then
-    alien.scaleX = 1.4
-    alien.scaleY = 1.4
+    alien.scaleX = 1.8
+    alien.scaleY = 1.8
   end
   
   table.insert(alienList, alien)

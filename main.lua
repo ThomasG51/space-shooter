@@ -10,11 +10,15 @@ love.window.setTitle('Space Shooter')
 -- use to active random value
 math.randomseed(love.timer.getTime())
 
+-- Returns the angle between two vectors assuming the same origin.
+function math.angle(x1,y1, x2,y2) return math.atan2(y2-y1, x2-x1) end
+
 WINDOW_WIDTH = love.graphics.getWidth()
 WINDOW_HEIGHT = love.graphics.getHeight()
 GAME_SCROLL = 30
 
 local mainTheme = love.audio.newSource('sounds/music.mp3', 'stream')
+local shootEffect = love.audio.newSource('sounds/shoot.wav', 'static')
 
 local spaceship = require('spaceship')
 local map = require('map')
@@ -24,6 +28,9 @@ local shootList = {}
 
 require('functions/addAlien')
 local alienList = {}
+
+-- Aliens chrono shoot
+local chronoShoot = 0
 
 -- Alien direction
 local randomDirection = math.random(1,2)
@@ -36,16 +43,8 @@ function love.load()
   spaceship.load()
   map.load()
   
-  local line = -3
-  local column = 4
-  addAlien('turret', (column - 1) * 64, -(line - 1) * 64 + 32, alienList)
-  
   local line = 7
   local column = 8
-  addAlien('turret', (column - 1) * 64, -(line - 1) * 64 + 32, alienList)
-  
-  local line = 9
-  local column = 15
   addAlien('turret', (column - 1) * 64, -(line - 1) * 64 + 32, alienList)
   
   local line = 14
@@ -79,10 +78,11 @@ function love.update(dt)
   local i
   for i = #shootList, 1, -1 do
     -- movement
-    shootList[i].positionY = shootList[i].positionY - (shootList[i].speed *dt)
+    shootList[i].positionX = shootList[i].positionX + shootList[i].speedX
+    shootList[i].positionY = shootList[i].positionY + shootList[i].speedY
 
     -- remove
-    if shootList[i].positionY < 0 then
+    if shootList[i].positionY < 0 or shootList[i].positionY > WINDOW_HEIGHT then
       table.remove(shootList, i)
     end
   end
@@ -90,25 +90,38 @@ function love.update(dt)
   -- ALIENS
   local i
   for i = #alienList, 1, -1 do
+    -- wake-up
     if alienList[i].positionY > 0 then
       alienList[i].sleep = false
     end
     
     if alienList[i].sleep == false then
-      -- movement
+      local shootDirection = math.angle(alienList[i].positionX,alienList[i].positionY, spaceship.positionX,spaceship.positionY)
+      
+      alienList[i].chronoShoot = alienList[i].chronoShoot + 1
+      
       if alienList[i].type == 'mothership' then
         alienList[i].positionY = alienList[i].positionY + (alienList[i].speedY * dt)
+        alienList[i].shootInterval = math.random(120, 240) 
+        alienList[i].shootSpeedX = 10 * math.cos(shootDirection)
+        alienList[i].shootSpeedY = 10
         
       elseif alienList[i].type == 'turret' then
-        alienList[i].positionY = alienList[i].positionY + (GAME_SCROLL * dt)
+        alienList[i].positionY = alienList[i].positionY + (GAME_SCROLL * dt) 
+        alienList[i].shootInterval = math.random(10, 30)
+        alienList[i].shootSpeedX = 10 * math.cos(shootDirection)
+        alienList[i].shootSpeedY = 10 * math.sin(shootDirection)
         
       elseif alienList[i].type == 'cargo' then
-        alienList[i].positionY = alienList[i].positionY + (alienList[i].speedY * dt)
+        alienList[i].positionY = alienList[i].positionY + (alienList[i].speedY * dt)        
         if randomDirection == 2 then
           alienList[i].positionX = alienList[i].positionX - (alienList[i].speedX * dt)
         else
           alienList[i].positionX = alienList[i].positionX + (alienList[i].speedX * dt)
         end
+        alienList[i].shootInterval = math.random(80, 120)  
+        alienList[i].shootSpeedX = 10 * math.cos(shootDirection)
+        alienList[i].shootSpeedY = 10
         
       elseif alienList[i].type == 'fighter' then
         alienList[i].positionY = alienList[i].positionY + (alienList[i].speedY * dt)
@@ -117,6 +130,16 @@ function love.update(dt)
         else
           alienList[i].positionX = alienList[i].positionX - (alienList[i].speedX * dt)
         end
+        alienList[i].shootInterval = math.random(50, 180)  
+        alienList[i].shootSpeedX = 10 * math.cos(shootDirection)
+        alienList[i].shootSpeedY = 10 * math.sin(shootDirection)
+      end
+      
+      -- shoots
+      if alienList[i].chronoShoot >= alienList[i].shootInterval then
+        addShoot('alien', alienList[i].positionX, alienList[i].positionY, alienList[i].shootSpeedX, alienList[i].shootSpeedY, shootList)
+        shootEffect:play()
+        alienList[i].chronoShoot = 0
       end
     else
       alienList[i].positionY = alienList[i].positionY + (GAME_SCROLL * dt)
@@ -136,6 +159,12 @@ function love.draw()
   -- draw map
   map.draw()
   
+  -- draw shoots
+  local i
+  for i = 1, #shootList do
+    love.graphics.draw(shootList[i].sprite, shootList[i].positionX, shootList[i].positionY, 0, 1.4, 1.4, shootList[i].originX, shootList[i].originY)
+  end
+  
   -- draw aliens
   local i
   for i = 1, #alienList do
@@ -144,12 +173,6 @@ function love.draw()
   
   -- draw spaceship
   spaceship.draw()
-  
-  -- draw shoots
-  local i
-  for i = 1, #shootList do
-    love.graphics.draw(shootList[i].sprite, shootList[i].positionX, shootList[i].positionY, 0, 1, 1, shootList[i].originX, shootList[i].originY)
-  end
   
   -- draw logs
   love.graphics.print('Shoots: ' .. #shootList, 10, 10)
@@ -162,8 +185,8 @@ end
 function love.keypressed(key)
   
   if key == 'space' then
-    spaceship.shootSound:play()
-    addShoot(spaceship.positionX, spaceship.positionY - (spaceship.height / 2), shootList)
+    addShoot('spaceship', spaceship.positionX, spaceship.positionY - (spaceship.height / 2), 0, -10, shootList)
+    shootEffect:play()
   end
   
 end
