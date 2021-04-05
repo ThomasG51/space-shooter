@@ -12,6 +12,7 @@ math.randomseed(love.timer.getTime())
 
 WINDOW_WIDTH = love.graphics.getWidth()
 WINDOW_HEIGHT = love.graphics.getHeight()
+GAME_SCROLL = 30
 
 local mainTheme = love.audio.newSource('sounds/music.mp3', 'stream')
 
@@ -35,9 +36,17 @@ function love.load()
   spaceship.load()
   map.load()
   
-  addAlien('mothership', 120, 120, alienList)
-  addAlien('fighter', 520, 520, alienList)
-  addAlien('cargo', 940, 360, alienList)
+  local line = 14
+  local column = 4
+  addAlien('mothership', (column - 1) * 64, -(line - 1) * 64, alienList)
+  
+  local line = 2
+  local column = 8
+  addAlien('fighter',  (column - 1) * 64, -(line - 1) * 64, alienList)
+  
+  local line = 6
+  local column = 12
+  addAlien('cargo',  (column - 1) * 64, -(line - 1) * 64, alienList)
   
 end
 
@@ -45,7 +54,7 @@ end
 function love.update(dt)
   
   -- MAP
-  map.scrollY = map.scrollY + (50*dt)
+  map.update(dt)
   
   -- SPACESHIP
   spaceship.update(dt)
@@ -65,21 +74,29 @@ function love.update(dt)
   -- ALIENS
   local i
   for i = #alienList, 1, -1 do
-    -- movement
-    alienList[i].positionY = alienList[i].positionY + (alienList[i].speed * dt)
-          
-    if alienList[i].type == 'cargo' then
-      if randomDirection == 2 then
-        alienList[i].positionX = alienList[i].positionX - (alienList[i].speed * dt)
-      else
-        alienList[i].positionX = alienList[i].positionX + (alienList[i].speed * dt)
+    if alienList[i].positionY > 0 then
+      alienList[i].sleep = false
+    end
+    
+    if alienList[i].sleep == false then
+      -- movement
+      alienList[i].positionY = alienList[i].positionY + (alienList[i].speedY * dt)
+            
+      if alienList[i].type == 'cargo' then
+        if randomDirection == 2 then
+          alienList[i].positionX = alienList[i].positionX - (alienList[i].speedX * dt)
+        else
+          alienList[i].positionX = alienList[i].positionX + (alienList[i].speedX * dt)
+        end
+      elseif alienList[i].type == 'fighter' then
+        if randomDirection == 2 then
+          alienList[i].positionX = alienList[i].positionX + (alienList[i].speedX * dt)
+        else
+          alienList[i].positionX = alienList[i].positionX - (alienList[i].speedX * dt)
+        end
       end
-    elseif alienList[i].type == 'fighter' then
-      if randomDirection == 2 then
-        alienList[i].positionX = alienList[i].positionX + (alienList[i].speed * dt)
-      else
-        alienList[i].positionX = alienList[i].positionX - (alienList[i].speed * dt)
-      end
+    else
+      alienList[i].positionY = alienList[i].positionY + (GAME_SCROLL * dt)
     end
     
     -- remove

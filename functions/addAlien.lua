@@ -10,7 +10,9 @@ function addAlien(type, x, y, alienList)
   alien.height = alien.sprite:getHeight()
   alien.originX = alien.width /2
   alien.originY = alien.height / 2
-  alien.speed = 30
+  alien.speedX = 20
+  alien.speedY = 50
+  alien.sleep = true
   
   if type == 'mothership' then
     alien.scaleX = 3.4

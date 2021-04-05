@@ -22,8 +22,8 @@ spaceship.load = function()
   spaceship.positionX = WINDOW_WIDTH / 2
   spaceship.positionY = WINDOW_HEIGHT - 96
   
-  spaceship.scaleX = 1.4
-  spaceship.scaleY = 1.4
+  spaceship.scaleX = 1.8
+  spaceship.scaleY = 1.8
   
 end
 
