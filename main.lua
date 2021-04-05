@@ -36,9 +36,21 @@ function love.load()
   spaceship.load()
   map.load()
   
+  local line = -3
+  local column = 4
+  addAlien('turret', (column - 1) * 64, -(line - 1) * 64 + 32, alienList)
+  
+  local line = 7
+  local column = 8
+  addAlien('turret', (column - 1) * 64, -(line - 1) * 64 + 32, alienList)
+  
+  local line = 9
+  local column = 15
+  addAlien('turret', (column - 1) * 64, -(line - 1) * 64 + 32, alienList)
+  
   local line = 14
   local column = 4
-  addAlien('mothership', (column - 1) * 64, -(line - 1) * 64, alienList)
+  addAlien('turret', (column - 1) * 64, -(line - 1) * 64 + 32, alienList)
   
   local line = 2
   local column = 8
@@ -47,6 +59,10 @@ function love.load()
   local line = 6
   local column = 12
   addAlien('cargo',  (column - 1) * 64, -(line - 1) * 64, alienList)
+  
+  local line = 14
+  local column = 4
+  addAlien('mothership', (column - 1) * 64, -(line - 1) * 64, alienList)
   
 end
 
@@ -80,15 +96,22 @@ function love.update(dt)
     
     if alienList[i].sleep == false then
       -- movement
-      alienList[i].positionY = alienList[i].positionY + (alienList[i].speedY * dt)
-            
-      if alienList[i].type == 'cargo' then
+      if alienList[i].type == 'mothership' then
+        alienList[i].positionY = alienList[i].positionY + (alienList[i].speedY * dt)
+        
+      elseif alienList[i].type == 'turret' then
+        alienList[i].positionY = alienList[i].positionY + (GAME_SCROLL * dt)
+        
+      elseif alienList[i].type == 'cargo' then
+        alienList[i].positionY = alienList[i].positionY + (alienList[i].speedY * dt)
         if randomDirection == 2 then
           alienList[i].positionX = alienList[i].positionX - (alienList[i].speedX * dt)
         else
           alienList[i].positionX = alienList[i].positionX + (alienList[i].speedX * dt)
         end
+        
       elseif alienList[i].type == 'fighter' then
+        alienList[i].positionY = alienList[i].positionY + (alienList[i].speedY * dt)
         if randomDirection == 2 then
           alienList[i].positionX = alienList[i].positionX + (alienList[i].speedX * dt)
         else
@@ -113,6 +136,12 @@ function love.draw()
   -- draw map
   map.draw()
   
+  -- draw aliens
+  local i
+  for i = 1, #alienList do
+    love.graphics.draw(alienList[i].sprite, alienList[i].positionX, alienList[i].positionY, 0, alienList[i].scaleX, alienList[i].scaleY, alienList[i].originX, alienList[i].originY)
+  end
+  
   -- draw spaceship
   spaceship.draw()
   
@@ -120,12 +149,6 @@ function love.draw()
   local i
   for i = 1, #shootList do
     love.graphics.draw(shootList[i].sprite, shootList[i].positionX, shootList[i].positionY, 0, 1, 1, shootList[i].originX, shootList[i].originY)
-  end
-  
-  -- draw aliens
-  local i
-  for i = 1, #alienList do
-    love.graphics.draw(alienList[i].sprite, alienList[i].positionX, alienList[i].positionY, 0, alienList[i].scaleX, alienList[i].scaleY, alienList[i].originX, alienList[i].originY)
   end
   
   -- draw logs

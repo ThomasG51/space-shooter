@@ -14,7 +14,7 @@ table.insert(map.grid, {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0})
 table.insert(map.grid, {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0})
 table.insert(map.grid, {0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,0})
 table.insert(map.grid, {0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,0})
-table.insert(map.grid, {0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,0})
+table.insert(map.grid, {0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,0})-- Top of the screen (line 1)
 table.insert(map.grid, {0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,0})
 table.insert(map.grid, {0,0,0,0,0,0,0,0,2,2,2,2,2,2,2,0})
 table.insert(map.grid, {0,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0})
@@ -30,6 +30,7 @@ map.row = #map.grid
 map.column = 16
 map.tile = {}
 map.scroll = 0
+
 
 map.load = function()
   
@@ -60,5 +61,6 @@ map.draw = function()
   end
   
 end
+
 
 return map

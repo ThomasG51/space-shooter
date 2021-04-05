@@ -23,6 +23,9 @@ function addAlien(type, x, y, alienList)
   elseif type == 'fighter' then
     alien.scaleX = 1.4
     alien.scaleY = 1.4
+  elseif type == 'turret' then
+    alien.scaleX = 1.4
+    alien.scaleY = 1.4
   end
   
   table.insert(alienList, alien)
