@@ -23,17 +23,18 @@ require('functions/addShoot')
 require('functions/addAlien')
 require('functions/addExplosion')
 require('functions/collide')
+require('functions/restartGame')
 require('modes/game/gameLoad')
 require('modes/game/gameUpdate')
 require('modes/game/gameDraw')
 require('modes/menu/menuLoad')
 require('modes/menu/menuDraw')
 require('modes/game-over/gameOverLoad')
+require('modes/game-over/gameOverUpdate')
 require('modes/game-over/gameOverDraw')
 
 spaceship = require('spaceship')
 map = require('map')
-
 
 function love.load()
   menuLoad()
@@ -47,10 +48,8 @@ function love.update(dt)
     gameUpdate(dt)
   elseif gameMode == 'menu' then
     
-  elseif gameMode == 'pause' then
-    
   elseif gameMode == 'game-over' then
-    
+    gameOverUpdate()
   end
 end
 
@@ -60,8 +59,6 @@ function love.draw()
     gameDraw() 
   elseif gameMode == 'menu' then
     menuDraw()
-  elseif gameMode == 'pause' then
-    
   elseif gameMode == 'game-over' then
     gameOverDraw()
   end
@@ -69,14 +66,21 @@ end
 
 
 function love.keypressed(key)
-  if key == 'space' then
-    addShoot('spaceship', spaceship.positionX, spaceship.positionY - (spaceship.height / 2), 0, -10, shootList)
-    shootEffect:play()
-  end
-  
-  if key == 'return' then
-    gameMode = 'game'
-    mainTheme:play()
-    mainTheme:setVolume(0.5)
+  if gameMode == 'game' then
+    if key == 'space' then
+      addShoot('spaceship', spaceship.positionX, spaceship.positionY - (spaceship.height / 2), 0, -10, shootList)
+      shootEffect:play()
+    end
+  elseif gameMode == 'menu' then
+    if key == 'return' then
+      gameMode = 'game'
+      mainTheme:play()
+      mainTheme:setVolume(0.5)
+    end
+  elseif gameMode == 'game-over' then
+    if key == 'return' then
+      gameMode = 'game'
+      restartGame()
+    end
   end
 end

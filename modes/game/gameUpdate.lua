@@ -19,7 +19,8 @@ function gameUpdate(dt)
          table.remove(shootList, i)
          spaceship.life = spaceship.life - 1
          if spaceship.life <= 0 then
-           --gameMode = 'game-over'
+           gameMode = 'game-over'
+           mainTheme:pause()
          end
       elseif shootList[i].positionY < 0 or 
              shootList[i].positionY > WINDOW_HEIGHT or 
@@ -38,9 +39,16 @@ function gameUpdate(dt)
           table.remove(shootList, i)
           alienList[n].life = alienList[n].life - 1  
           if alienList[n].life <= 0 then
-            for i=1,5 do
-              addExplosion((alienList[n].positionX - (alienList[n].width/2)) + math.random(-10, 10), (alienList[n].positionY - (alienList[n].height/2)) + math.random(-10, 10))
+            if alienList[n].type == 'mothership' then
+              for i=1,20 do
+                addExplosion((alienList[n].positionX - (alienList[n].width/2)) + math.random(-100, 100), (alienList[n].positionY - (alienList[n].height/2)) + math.random(-100, 100))
+                end
+            else
+              for i=1,5 do
+                addExplosion((alienList[n].positionX - (alienList[n].width/2)) + math.random(-10, 10), (alienList[n].positionY - (alienList[n].height/2)) + math.random(-10, 10))
+              end
             end
+            
             explodeEffect:play()
             table.remove(alienList, n)
           end
@@ -70,13 +78,17 @@ function gameUpdate(dt)
       -- Aliens type settings
       if alienList[i].type == 'mothership' then
         alienList[i].positionY = alienList[i].positionY + (alienList[i].speedY * dt)
-        alienList[i].shootInterval = math.random(120, 240) 
-        alienList[i].shootSpeedX = 10 * math.cos(shootDirection)
-        alienList[i].shootSpeedY = 10
+        if alienList[i].positionY >= WINDOW_HEIGHT / 2 then
+          alienList[i].positionY = WINDOW_HEIGHT / 2
+        end
+        alienList[i].shootInterval = 6 
+        alienList[i].shootAngle = alienList[i].shootAngle + 0.5
+        alienList[i].shootSpeedX = 10 * math.cos(alienList[i].shootAngle)
+        alienList[i].shootSpeedY = 10 * math.sin(alienList[i].shootAngle)
         
       elseif alienList[i].type == 'turret' then
         alienList[i].positionY = alienList[i].positionY + (GAME_SCROLL * dt) 
-        alienList[i].shootInterval = math.random(10, 30)
+        alienList[i].shootInterval = math.random(30, 60)
         alienList[i].shootSpeedX = 10 * math.cos(shootDirection)
         alienList[i].shootSpeedY = 10 * math.sin(shootDirection)
         
