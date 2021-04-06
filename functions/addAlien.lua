@@ -19,8 +19,8 @@ function addAlien(type, x, y, alienList)
   alien.shootSpeedY = 10
   
   if type == 'mothership' then
-    alien.scaleX = 3.4
-    alien.scaleY = 3.4
+    alien.scaleX = 4.4
+    alien.scaleY = 4.4
     alien.life = 5
   elseif type == 'cargo' then
     alien.scaleX = 2.4

@@ -56,11 +56,4 @@ spaceship.update = function(dt)
 end
 
 
-spaceship.draw = function()
-  
-  love.graphics.draw(spaceship.sprite, spaceship.positionX, spaceship.positionY, spaceship.rotation, spaceship.scaleX, spaceship.scaleY, spaceship.originX, spaceship.originY)
-  
-end
-
-
 return spaceship
